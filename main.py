@@ -4,15 +4,17 @@ from PyQt5 import QtWidgets
 import sqlite3
 from PyQt5 import uic
 from PyQt5 import QtGui
+from main1 import Ui_MainWindow
+from addEditCoffeeForm import Ui_k
 
 
-class Add_Coffee(QDialog):
+class Add_Coffee(QDialog, Ui_k):
     def __init__(self, obj):
         self.obj = obj
         super().__init__()
-        uic.loadUi("addEditCoffeeForm.ui", self)
+        self.setupUi(self)
         self.setFixedSize(611, 373)
-        self.con = sqlite3.connect("coffee.db")
+        self.con = sqlite3.connect("data/coffee.db")
         self.add.clicked.connect(self.new_func)
         self.cur = self.con.cursor()
         self.comboBox.addItems([el[1] for el in self.cur.execute('select * from roast').fetchall()])
@@ -30,7 +32,6 @@ class Add_Coffee(QDialog):
             id = list(self.cur.execute(f"SELECT id FROM coffe_info").fetchall())[-1][0] + 1
             roast_id = int(list(self.cur.execute(f"SELECT id from roast where '{roast}' = roasted").fetchall())[0][0])
             msg = QMessageBox.information(self, 'Успешно!', f'Добавлен элемент', QMessageBox.Ok)
-            request = ", ".join([])
             if structure == "молотый":
                 structure = 1
             else:
@@ -46,14 +47,14 @@ class Add_Coffee(QDialog):
             self.close()
 
 
-class Update_coffee(QDialog):
+class Update_coffee(QDialog, Ui_k):
     def __init__(self, obj, id):
         self.obj = obj
         self.title = id
         super().__init__()
-        uic.loadUi("addEditCoffeeForm.ui", self)
+        self.setupUi(self)
         self.setFixedSize(611, 373)
-        self.con = sqlite3.connect("coffee.db")
+        self.con = sqlite3.connect("data/coffee.db")
         self.add.clicked.connect(self.new_func)
         self.cur = self.con.cursor()
         self.comboBox.addItems([el[1] for el in self.cur.execute('select * from roast').fetchall()])
@@ -70,7 +71,6 @@ class Update_coffee(QDialog):
                 raise Exception
             roast_id = int(list(self.cur.execute(f"SELECT id from roast where '{roast}' = roasted").fetchall())[0][0])
             msg = QMessageBox.information(self, 'Успешно!', f'Обновлен элемент', QMessageBox.Ok)
-            request = ", ".join([])
             if structure == "молотый":
                 structure = 1
             else:
@@ -87,12 +87,12 @@ class Update_coffee(QDialog):
             self.close()
 
 
-class Main_Table_Window(QMainWindow):
+class Main_Table_Window(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
-        con = sqlite3.connect("coffee.db")
+        con = sqlite3.connect("data/coffee.db")
         self.cur = con.cursor()
-        uic.loadUi('main.ui', self)
+        self.setupUi(self)
         self.table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.table.cellDoubleClicked.connect(self.edit_co)
         self.add.clicked.connect(self.add_co)
